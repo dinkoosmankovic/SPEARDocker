@@ -13,7 +13,10 @@ ENV PYTHONIOENCODING UTF-8
 # Commands are combined in single RUN statement with "apt/lists" folder removal to reduce image size
 RUN apt-get update && \
     apt-get install -y ros-${ROS_DISTRO}-desktop-full && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    cd ~/ws_moveit && \
+    catkin build && \
+    echo "source ~/ws_moveit/devel/setup.bash" >> ~/.bashrc
 
 RUN \
     # Download moveit source so that we can get necessary dependencies
@@ -26,7 +29,12 @@ RUN \
     #
     rosdep update && \
     rosdep install -y --from-paths . --ignore-src --rosdistro ${ROS_DISTRO} --as-root=apt:false && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    git clone https://github.com/xArm-Developer/xarm_ros.git && \
+    rosdep check --from-paths . --ignore-src --rosdistro melodic && \
+    rosdep install --from-paths . --ignore-src --rosdistro melodic -y && \
+    cd ~/ws_moveit && \
+    catkin build
 
 RUN apt-get update && \
     apt-get install -y \
@@ -57,3 +65,4 @@ RUN apt-get update && \
     wget https://ompl.kavrakilab.org/install-ompl-ubuntu.sh && \
     chmod u+x install-ompl-ubuntu.sh && \
     ./install-ompl-ubuntu.sh
+
