@@ -14,7 +14,20 @@ ENV PYTHONIOENCODING UTF-8
 RUN apt-get update && \
     apt-get install -y ros-${ROS_DISTRO}-desktop-full && \
     rm -rf /var/lib/apt/lists/*
-    
+
+RUN \
+    # Download moveit source so that we can get necessary dependencies
+    wstool init . https://raw.githubusercontent.com/ros-planning/moveit/master/moveit.rosinstall && \
+    #
+    # Update apt package list as cache is cleared in previous container
+    # Usually upgrading involves a few packages only (if container builds became out-of-sync)
+    apt-get -qq update && \
+    apt-get -qq dist-upgrade && \
+    #
+    rosdep update && \
+    rosdep install -y --from-paths . --ignore-src --rosdistro ${ROS_DISTRO} --as-root=apt:false && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update && \
     apt-get install -y \
         build-essential  \
@@ -45,24 +58,10 @@ RUN apt-get update && \
     chmod u+x install-ompl-ubuntu.sh && \
     ./install-ompl-ubuntu.sh
 
+RUN git clone https://github.com/xArm-Developer/xarm_ros.git
+    
 RUN \
-    # Download moveit source so that we can get necessary dependencies
-    wstool init . https://raw.githubusercontent.com/ros-planning/moveit/master/moveit.rosinstall && \
-    #
-    # Update apt package list as cache is cleared in previous container
-    # Usually upgrading involves a few packages only (if container builds became out-of-sync)
-    apt-get -qq update && \
-    apt-get -qq dist-upgrade && \
     apt-get install -y python-catkin-tools && \
-    #
-    rosdep update && \
-    rosdep install -y --from-paths . --ignore-src --rosdistro ${ROS_DISTRO} --as-root=apt:false && \
-    rm -rf /var/lib/apt/lists/* && \
-    git clone https://github.com/xArm-Developer/xarm_ros.git && \
-    rosdep check --from-paths . --ignore-src --rosdistro melodic && \
-    rosdep install --from-paths . --ignore-src --rosdistro melodic -y && \
-    echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc \\
-    cd ~/ws_moveit && \
-    catkin build && \\
-    echo "source ~/ws_moveit/devel/setup.bash" >> ~/.bashrc
+    /bin/bash -c "source /opt/ros/melodic/setup.bash" 
 
+RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd ~/ws_moveit/; catkin build'
