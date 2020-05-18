@@ -64,4 +64,5 @@ RUN \
     apt-get install -y python-catkin-tools && \
     /bin/bash -c "source /opt/ros/melodic/setup.bash" 
 
-RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd ~/ws_moveit/; catkin build'
+RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd ~/ws_moveit/; catkin build' && \
+/bin/bash -c "source ~/ws_moveit/devel/setup.bash" 

@@ -139,7 +139,7 @@ ${DOCKER_EXECUTABLE:-docker} run \
     --env="XAUTHORITY=$XAUTH" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     --volume="$XAUTH:$XAUTH" \
-    -v /home/dinko/MoveItDocker/transition:/root/transition \
+    -v ~/MoveItDocker/transition:/root/transition \
     ${NAME_OPTION:-} \
     ${DOCKER_PARAMS:-} \
     $@ ${DUMMY_DEFAULTS:-}
