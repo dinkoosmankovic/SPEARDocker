@@ -15,7 +15,7 @@ RUN apt-get update && \
     apt-get install -y ros-${ROS_DISTRO}-desktop-full && \
     rm -rf /var/lib/apt/lists/*
 
-RUN \
+RUN apt-get update && \
     # Download moveit source so that we can get necessary dependencies
     wstool init . https://raw.githubusercontent.com/ros-planning/moveit/master/moveit.rosinstall && \
     #
@@ -58,7 +58,10 @@ RUN apt-get update && \
     chmod u+x install-ompl-ubuntu.sh && \
     ./install-ompl-ubuntu.sh
 
-RUN git clone https://github.com/xArm-Developer/xarm_ros.git
+RUN git clone https://github.com/xArm-Developer/xarm_ros.git && \
+    cd xarm_ros && git checkout 1d517a959e2538c813b3397e6de2c81640ed46b7
+
+RUN git clone https://github.com/ros-controls/ros_control.git
     
 RUN \
     apt-get install -y python-catkin-tools && \
