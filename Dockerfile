@@ -59,9 +59,9 @@ RUN apt-get update && \
     ./install-ompl-ubuntu.sh
 
 RUN git clone https://github.com/xArm-Developer/xarm_ros.git && \
-    cd xarm_ros && git checkout 1d517a959e2538c813b3397e6de2c81640ed46b7
-
-RUN git clone https://github.com/ros-controls/ros_control.git
+    rosdep update && \
+    rosdep check --from-paths . --ignore-src --rosdistro melodic && \
+    rosdep install --from-paths . --ignore-src --rosdistro melodic -y
     
 RUN \
     apt-get install -y python-catkin-tools && \
