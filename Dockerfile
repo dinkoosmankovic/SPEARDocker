@@ -58,7 +58,9 @@ RUN apt-get update && \
     chmod u+x install-ompl-ubuntu.sh && \
     ./install-ompl-ubuntu.sh
 
-RUN git clone https://github.com/xArm-Developer/xarm_ros.git && \
+RUN git clone https://github.com/xArm-Developer/xarm_ros.git
+RUN apt-get install ros-melodic-combined-robot-hw
+RUN rosdep fix-permissions && \
     rosdep update && \
     rosdep check --from-paths . --ignore-src --rosdistro melodic && \
     rosdep install --from-paths . --ignore-src --rosdistro melodic -y
@@ -67,5 +69,7 @@ RUN \
     apt-get install -y python-catkin-tools && \
     /bin/bash -c "source /opt/ros/melodic/setup.bash" 
 
-RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd ~/ws_moveit/; catkin build' && \
+RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd ~/ws_moveit/; catkin_make' && \
 /bin/bash -c "source ~/ws_moveit/devel/setup.bash" 
+
+RUN apt-get ros-melodic-joint-trajectory-controller
